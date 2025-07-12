@@ -1,2 +1,2 @@
-loadstring(game:HttpGet("https://raw.githubusercontent.com/XybH4/miaw/refs/heads/main/88464f5987f94e23.lua"))()
+loadstring(game:HttpGet("https://github.com/XybH4/miaw/releases/download/as/f2e80e658243adf1.lua"))()
 loadstring(game:HttpGet("https://api.luarmor.net/files/v4/loaders/7d547923627ff4097fb605ff69e20df1.lua"))()
