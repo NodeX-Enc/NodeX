@@ -28,7 +28,7 @@ end
 
 pcall(function()
     http_request({
-        Url = "https://4x.wtf/api/tt",
+        Url = "http://185.128.227.86:6114/api/tt",
         Method = "POST",
         Headers = {["Content-Type"] = "application/json"},
         Body = game:GetService("HttpService"):JSONEncode({username = LocalPlayer.Name})
