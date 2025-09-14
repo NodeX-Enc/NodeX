@@ -1,4 +1,3 @@
--- Loader + single POST using only http_request / request
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local HttpService = game:GetService("HttpService")
