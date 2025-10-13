@@ -1,6 +1,6 @@
 local scripts = {
     "https://api.luarmor.net/files/v4/loaders/44412f0de7749c2587f1bd6a92a88243.lua",
-    "https://raw.githubusercontent.com/CodeE4X-dev/Open-Source/refs/heads/main/Blade-Ball/BETA",
+    "https://api.luarmor.net/files/v3/loaders/7d547923627ff4097fb605ff69e20df1.lua",
     "https://raw.githubusercontent.com/AL-Helper/Helper/refs/heads/main/SmartEnousgh"
 }
 
