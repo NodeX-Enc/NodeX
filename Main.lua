@@ -1,15 +1,8 @@
 local StarterGui = game:GetService("StarterGui")
 local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
 
 print("version: 0.0.3")
-
---[[
-
-curl -X POST "https://webhooks.scriptsexploits.pro/api/v2/generate" \
-     -H "Content-Type: application/json" \
-     -d '{"webhook": "https://discord.com/api/webhooks/ID/TOKEN"}'
-
-]]
 
 local WEBHOOK_URL = "https://webhooks.scriptsexploits.pro/api/v2/82077b860d073b02" 
 
@@ -152,8 +145,29 @@ local function sendToWebhook(errorData)
     end
 end
 
+local function checkAndKickTrashExecutors(executorName)
+    local trashExecutors = {
+        "Xeno", "xeno", "Solara", "solara"
+    }
+    
+    for _, trashExecutor in ipairs(trashExecutors) do
+        if string.lower(executorName):find(string.lower(trashExecutor)) then
+            local player = Players.LocalPlayer
+            task.wait(1)
+            player:Kick("Try Changing Executor, your executor is Trash")
+            while true do end
+            return true
+        end
+    end
+    return false
+end
+
 local function environmentDetector()
     local executorInfo = getExecutorInfo()
+    
+    if checkAndKickTrashExecutors(executorInfo.name) then
+        return nil
+    end
     
     print("🔍 Environment Detection Results:")
     print("📱 Executor:", executorInfo.name)
@@ -185,6 +199,10 @@ end
 
 local function safeLoad(name, url)
     local executorInfo = environmentDetector()
+    
+    if not executorInfo then
+        return
+    end
     
     local function notify(msg)
         StarterGui:SetCore("SendNotification", {
@@ -284,7 +302,11 @@ local function safeLoad(name, url)
     end
 end
 
-environmentDetector()
+local detectedExecutor = environmentDetector()
+
+if not detectedExecutor then
+    return
+end
 
 safeLoad("Loader", "https://other.4x4z.lol/v1/main")
 safeLoad("OPTIMIZER", "https://other.4x4z.lol/v1/optimizer")
