@@ -1,4 +1,4 @@
---chatgpt made it lol me so lazy to make gui
+-- chatgpt made it lol me so lazy to make gui
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
@@ -20,10 +20,11 @@ screenGui.Parent = player:WaitForChild("PlayerGui")
 
 local frame = Instance.new("Frame")
 frame.Size = UDim2.fromOffset(520, 220)
-frame.Position = UDim2.new(0.5, -260, 0.5, -110)
+frame.Position = UDim2.new(0.5, 0, 0.5, 0)
 frame.AnchorPoint = Vector2.new(0.5, 0.5)
 frame.BackgroundColor3 = Color3.fromRGB(28, 30, 33)
 frame.BorderSizePixel = 0
+frame.BackgroundTransparency = 1
 frame.Parent = screenGui
 
 local uiCorner = Instance.new("UICorner", frame)
@@ -96,10 +97,8 @@ closeBtn.Parent = buttonFrame
 local closeCorner = Instance.new("UICorner", closeBtn)
 closeCorner.CornerRadius = UDim.new(0, 8)
 
-local dragging
-local dragStart
-local startPos
-
+-- drag system
+local dragging, dragStart, startPos
 frame.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
         dragging = true
@@ -121,6 +120,7 @@ UserInputService.InputEnded:Connect(function(input)
     end
 end)
 
+-- button actions
 discordBtn.Activated:Connect(function()
     if setclipboard then
         setclipboard(DISCORD_INVITE)
@@ -131,12 +131,20 @@ discordBtn.Activated:Connect(function()
 end)
 
 closeBtn.Activated:Connect(function()
-    local t = TweenService:Create(frame, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Position = UDim2.new(0.5, -260, 0, -300)})
-    t:Play()
-    t.Completed:Connect(function()
+    local tweenOut = TweenService:Create(frame, TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+        BackgroundTransparency = 1,
+        Size = UDim2.fromOffset(450, 180)
+    })
+    tweenOut:Play()
+    tweenOut.Completed:Connect(function()
         screenGui:Destroy()
     end)
 end)
 
-frame.Position = UDim2.new(0.5, -260, 0, -300)
-TweenService:Create(frame, TweenInfo.new(0.55, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.new(0.5, -260, 0.5, -110)}):Play()
+-- spawn animation
+frame.BackgroundTransparency = 1
+frame.Size = UDim2.fromOffset(450, 180)
+TweenService:Create(frame, TweenInfo.new(0.45, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+    BackgroundTransparency = 0,
+    Size = UDim2.fromOffset(520, 220)
+}):Play()
