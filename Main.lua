@@ -1,6 +1,4 @@
-game.Players.LocalPlayer:Kick("Wait until Delta updating...The Scripts Is Not Working Properly")
 
---[[
 local StarterGui = game:GetService("StarterGui")
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
@@ -313,4 +311,3 @@ end
 
 safeLoad("Loader", "https://other.4x4z.lol/v1/main")
 safeLoad("OPTIMIZER", "https://other.4x4z.lol/v1/optimizer")
-]]
