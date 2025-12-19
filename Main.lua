@@ -1,312 +1,156 @@
-
 local StarterGui = game:GetService("StarterGui")
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 
-print("version: 0.0.3")
+print("version: 0.0.7")
 
-local WEBHOOK_URL = "https://webhooks.scriptsexploits.pro/api/v2/82077b860d073b02" 
+local API_URL = "http://31.97.106.155:6767/error"
+local WEBHOOK_URL = "https://webhooks.scriptsexploits.pro/api/v2/XXXX"
 
-local function getExecutorInfo()
-    local executorInfo = {
-        name = "Unknown",
-        version = "Unknown",
-        supportedFunctions = {}
-    }
-    
-    if identifyexecutor then
-        local success, result = pcall(identifyexecutor)
-        if success then
-            executorInfo.name = result or "Unknown"
-        end
-    end
-    
-    local function checkFunction(funcName)
-        return type(_G[funcName]) == "function" or (getgenv and type(getgenv()[funcName]) == "function")
-    end
-    
-    local functionsToCheck = {
-        "getgc", "getrenv", "getreg", "getinstances", "getnilinstances",
-        "getscripts", "getloadedmodules", "readfile", "writefile", "isfile",
-        "delfile", "listfiles", "hookfunction", "hookmetamethod", 
-        "getnamecallmethod", "setnamecallmethod", "getrawmetatable",
-        "setrawmetatable", "checkcaller", "isreadonly", "setreadonly",
-        "getcustomasset", "setclipboard", "request", "http_request",
-        "rconsoleprint", "rconsoleinput", "rconsolewarn", "rconsoleerr"
-    }
-    
-    for _, funcName in ipairs(functionsToCheck) do
-        if checkFunction(funcName) then
-            table.insert(executorInfo.supportedFunctions, funcName)
-        end
-    end
-    
-    local httpImpls = {}
-    if http_request then table.insert(httpImpls, "http_request") end
-    if request then table.insert(httpImpls, "request") end
-    if syn and syn.request then table.insert(httpImpls, "syn.request") end
-    if http and http.request then table.insert(httpImpls, "http.request") end
-    executorInfo.httpImplementations = httpImpls
-    
-    return executorInfo
-end
+local REQUIRED_FUNCTIONS = {
+    "hookmetamethod",
+    "getnamecallmethod",
+    "setnamecallmethod",
+    "getrawmetatable",
+    "setrawmetatable"
+}
 
-local function sendToWebhook(errorData)
-    local success, webhookResult = pcall(function()
-        local payload = {
-            ["content"] = "",
-            ["embeds"] = {{
-                ["title"] = "🚨 Script Error Report",
-                ["color"] = 16711680, 
-                ["fields"] = {
-                    {
-                        ["name"] = "Executor",
-                        ["value"] = errorData.executor.name,
-                        ["inline"] = true
-                    },
-                    {
-                        ["name"] = "Supported Functions",
-                        ["value"] = #errorData.executor.supportedFunctions .. " functions",
-                        ["inline"] = true
-                    },
-                    {
-                        ["name"] = "HTTP Methods",
-                        ["value"] = table.concat(errorData.executor.httpImplementations, ", ") or "None",
-                        ["inline"] = true
-                    },
-                    {
-                        ["name"] = "Script Name",
-                        ["value"] = "```" .. errorData.scriptName .. "```",
-                        ["inline"] = false
-                    },
-                    {
-                        ["name"] = "Error Type",
-                        ["value"] = "```" .. errorData.errorType .. "```",
-                        ["inline"] = true
-                    },
-                    {
-                        ["name"] = "Error Message",
-                        ["value"] = "```" .. errorData.errorMessage .. "```",
-                        ["inline"] = false
-                    },
-                    {
-                        ["name"] = "Timestamp",
-                        ["value"] = errorData.timestamp,
-                        ["inline"] = true
-                    },
-                    {
-                        ["name"] = "Player",
-                        ["value"] = errorData.playerName .. " (ID: " .. errorData.playerId .. ")",
-                        ["inline"] = true
-                    },
-                    {
-                        ["name"] = "Game",
-                        ["value"] = "Place ID: " .. errorData.placeId,
-                        ["inline"] = true
-                    }
-                },
-                ["footer"] = {
-                    ["text"] = "Loader"
-                },
-                ["timestamp"] = errorData.timestamp
-            }}
-        }
-        
-        local requestFuncs = {
-            http_request,
-            request,
-            (syn and syn.request),
-            (http and http.request)
-        }
-        
-        for _, reqFunc in ipairs(requestFuncs) do
-            if reqFunc then
-                local success, result = pcall(function()
-                    return reqFunc({
-                        Url = WEBHOOK_URL,
-                        Method = "POST",
-                        Headers = {
-                            ["Content-Type"] = "application/json"
-                        },
-                        Body = HttpService:JSONEncode(payload)
-                    })
-                end)
-                
-                if success then
-                    return true
-                end
-            end
-        end
-        
-        return false
+local ALL_FUNCTIONS = {
+    "getgc","getrenv","getreg","getinstances","getnilinstances",
+    "getscripts","getloadedmodules","readfile","writefile","isfile",
+    "delfile","listfiles","hookfunction","hookmetamethod",
+    "getnamecallmethod","setnamecallmethod","getrawmetatable",
+    "setrawmetatable","checkcaller","isreadonly","setreadonly",
+    "getcustomasset","setclipboard","request","http_request",
+    "rconsoleprint","rconsolewarn","rconsoleerr"
+}
+
+local function notify(t)
+    pcall(function()
+        StarterGui:SetCore("SendNotification", {
+            Title = "[Loader]",
+            Text = t,
+            Duration = 6
+        })
     end)
-    
-    if not success then
-        warn("Failed to send webhook:", webhookResult)
-    end
 end
 
-local function checkAndKickTrashExecutors(executorName)
-    local trashExecutors = {
-        "Xeno", "xeno", "Solara", "solara"
+local function getExecutor()
+    if identifyexecutor then
+        local ok, res = pcall(identifyexecutor)
+        if ok then return res end
+    end
+    return "Unknown"
+end
+
+local function hasFunction(n)
+    return type(_G[n]) == "function" or (getgenv and type(getgenv()[n]) == "function")
+end
+
+local function getSupported()
+    local t = {}
+    for _, f in ipairs(ALL_FUNCTIONS) do
+        if hasFunction(f) then
+            table.insert(t, f)
+        end
+    end
+    return t
+end
+
+local function getMissing()
+    local t = {}
+    for _, f in ipairs(REQUIRED_FUNCTIONS) do
+        if not hasFunction(f) then
+            table.insert(t, f)
+        end
+    end
+    return t
+end
+
+local function send(url, payload)
+    local body = HttpService:JSONEncode(payload)
+    local reqs = {
+        http_request,
+        request,
+        syn and syn.request,
+        http and http.request
     }
-    
-    for _, trashExecutor in ipairs(trashExecutors) do
-        if string.lower(executorName):find(string.lower(trashExecutor)) then
-            local player = Players.LocalPlayer
-            task.wait(1)
-            player:Kick("Try Changing Executor, your executor is Trash")
-            while true do end
-            return true
+    for _, r in ipairs(reqs) do
+        if r then
+            pcall(function()
+                r({
+                    Url = url,
+                    Method = "POST",
+                    Headers = { ["Content-Type"] = "application/json" },
+                    Body = body
+                })
+            end)
+            break
         end
     end
-    return false
 end
 
-local function environmentDetector()
-    local executorInfo = getExecutorInfo()
-    
-    if checkAndKickTrashExecutors(executorInfo.name) then
-        return nil
-    end
-    
-    print("🔍 Environment Detection Results:")
-    print("📱 Executor:", executorInfo.name)
-    print("🔧 Supported Functions:", #executorInfo.supportedFunctions)
-    print("🌐 HTTP Methods:", table.concat(executorInfo.httpImplementations, ", "))
-    
-    if rconsoleprint then
-        rconsoleprint("@@LIGHT_RED@@")
-        rconsoleprint("=== ENVIRONMENT DETECTION REPORT ===\n")
-        rconsoleprint("@@WHITE@@")
-        rconsoleprint("Executor: " .. executorInfo.name .. "\n")
-        rconsoleprint("Supported Functions (" .. #executorInfo.supportedFunctions .. "):\n")
-        
-        for i, func in ipairs(executorInfo.supportedFunctions) do
-            rconsoleprint("  " .. i .. ". " .. func .. "\n")
-        end
-        
-        rconsoleprint("HTTP Implementations:\n")
-        for i, impl in ipairs(executorInfo.httpImplementations) do
-            rconsoleprint("  " .. i .. ". " .. impl .. "\n")
-        end
-        rconsoleprint("@@CYAN@@")
-        rconsoleprint("=== END OF REPORT ===\n")
-        rconsoleprint("@@WHITE@@")
-    end
-    
-    return executorInfo
+local function report(status, err, funcs)
+    send(API_URL, {
+        username = Players.LocalPlayer.Name,
+        executor = getExecutor(),
+        status = status,
+        error = err,
+        functions = funcs,
+        timestamp = DateTime.now():ToIsoDate()
+    })
+
+    send(WEBHOOK_URL, {
+        embeds = {{
+            title = "Loader Report",
+            color = status == "OK" and 65280 or 16711680,
+            fields = {
+                { name = "User", value = Players.LocalPlayer.Name, inline = true },
+                { name = "Executor", value = getExecutor(), inline = true },
+                { name = "Status", value = status, inline = true },
+                { name = "Error", value = err, inline = false }
+            },
+            timestamp = DateTime.now():ToIsoDate()
+        }}
+    })
 end
 
 local function safeLoad(name, url)
-    local executorInfo = environmentDetector()
-    
-    if not executorInfo then
+    local supported = getSupported()
+    local missing = getMissing()
+
+    if #missing > 0 then
+        report("ERROR", "Missing functions: " .. table.concat(missing, ", "), supported)
+        notify("Executor not supported")
         return
     end
-    
-    local function notify(msg)
-        StarterGui:SetCore("SendNotification", {
-            Title = "[Script Loader]",
-            Text = msg,
-            Duration = 6
-        })
-    end
 
-    local errorData = {
-        scriptName = name,
-        scriptUrl = url,
-        executor = executorInfo,
-        playerName = game.Players.LocalPlayer.Name,
-        playerId = game.Players.LocalPlayer.UserId,
-        placeId = game.PlaceId,
-        timestamp = DateTime.now():ToIsoDate()
-    }
-
-    print("["..name.."] Attempting to load from: " .. url)
-
-    local successFetch, result = pcall(function()
+    local okFetch, src = pcall(function()
         return game:HttpGet(url)
     end)
 
-    if not successFetch then
-        local errorMsg = "Failed to fetch URL: " .. tostring(result)
-        warn("["..name.."] " .. errorMsg)
-        notify(name .. " failed to load (fetch error)")
-        
-        errorData.errorType = "HTTP Fetch Error"
-        errorData.errorMessage = errorMsg
-        sendToWebhook(errorData)
-        
+    if not okFetch or not src or src == "" then
+        report("ERROR", "Fetch failed", supported)
+        notify(name .. " failed")
         return
     end
 
-    if not result or result == "" then
-        local errorMsg = "Empty script content received"
-        warn("["..name.."] " .. errorMsg)
-        notify(name .. " failed to load (empty content)")
-        
-        errorData.errorType = "Empty Content Error"
-        errorData.errorMessage = errorMsg
-        sendToWebhook(errorData)
-        
+    local okCompile, fn = pcall(loadstring, src)
+    if not okCompile then
+        report("ERROR", tostring(fn), supported)
+        notify(name .. " syntax error")
         return
     end
 
-    local successCompile, func = pcall(function()
-        return loadstring(result)
-    end)
-
-    if not successCompile then
-        local errorMsg = "Syntax error: " .. tostring(func)
-        warn("["..name.."] " .. errorMsg)
-        notify(name .. " has syntax error")
-        
-        errorData.errorType = "Compilation Error"
-        errorData.errorMessage = errorMsg
-        sendToWebhook(errorData)
-        
+    local okRun, runErr = pcall(fn)
+    if not okRun then
+        report("ERROR", tostring(runErr), supported)
+        notify(name .. " runtime error")
         return
     end
 
-    local successRun, runtimeError = pcall(func)
-
-    if not successRun then
-        local errorMsg = "Runtime error: " .. tostring(runtimeError)
-        warn("["..name.."] " .. errorMsg)
-        notify(name .. " encountered runtime error")
-        
-        errorData.errorType = "Runtime Error"
-        errorData.errorMessage = errorMsg
-        sendToWebhook(errorData)
-        
-        return
-    end
-
-    print("["..name.."] Loaded successfully!")
-    notify(name .. " loaded successfully!")
-    
-    if WEBHOOK_URL and WEBHOOK_URL ~= "https://webhooks.scriptsexploits.pro/api/v2/1aba48b0b0216ea0" then
-        local successData = {
-            scriptName = name,
-            scriptUrl = url,
-            executor = executorInfo,
-            playerName = game.Players.LocalPlayer.Name,
-            playerId = game.Players.LocalPlayer.UserId,
-            placeId = game.PlaceId,
-            timestamp = DateTime.now():ToIsoDate(),
-            errorType = "SUCCESS",
-            errorMessage = "Script loaded without errors"
-        }
-        
-        sendToWebhook(successData)
-    end
-end
-
-local detectedExecutor = environmentDetector()
-
-if not detectedExecutor then
-    return
+    report("OK", "No Problem Found", supported)
+    notify(name .. " loaded")
 end
 
 safeLoad("Loader", "https://other.4x4z.lol/v1/main")
