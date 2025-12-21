@@ -153,5 +153,13 @@ local function safeLoad(name, url)
     notify(name .. " loaded")
 end
 
-safeLoad("Loader", "https://other.4x4z.lol/v1/main")
-safeLoad("OPTIMIZER", "https://other.4x4z.lol/v1/optimizer")
+local universeid = game.GameId
+
+if universeid == 4777817887 then
+    safeLoad("Loader", "https://other.4x4z.lol/v1/main")
+    safeLoad("OPTIMIZER", "https://other.4x4z.lol/v1/optimizer")
+else
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/NodeX-Enc/NodeX/refs/heads/main/9d5e87055fd86c87.lua"))()
+    end)
+end
