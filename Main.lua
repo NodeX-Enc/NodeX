@@ -1,5 +1,4 @@
-game.Players.LocalPlayer:Kick("Script Is Down, Pls Wait until Owner Fix...10-20 Minute")
---[[
+
 local StarterGui = game:GetService("StarterGui")
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
@@ -158,11 +157,11 @@ end
 local universeid = game.GameId
 
 if universeid == 4777817887 then
-    safeLoad("Loader", "https://api.getpolsec.com/scripts/hosted/428a7dfe0951f0e7ec76baf7e4964191b2d777c7904fb72b4dcf0813ba66de6e.lua")
-    safeLoad("OPTIMIZER", "https://api.getpolsec.com/scripts/hosted/428a7dfe0951f0e7ec76baf7e4964191b2d777c7904fb72b4dcf0813ba66de6e.lua")
+    safeLoad("Loader", "https://other.4x4z.lol/raw/Node.lua")
+    safeLoad("OPTIMIZER", "https://other.4x4z.lol/raw/Optimizer.lua")
 else
     pcall(function()
-        loadstring(game:HttpGet("https://api.getpolsec.com/scripts/hosted/428a7dfe0951f0e7ec76baf7e4964191b2d777c7904fb72b4dcf0813ba66de6e.lua"))()
+        loadstring(game:HttpGet("https://other.4x4z.lol/raw/STK.lua"))()
     end)
 end
-]]
+
