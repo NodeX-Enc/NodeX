@@ -1,3 +1,5 @@
+game.Players.LocalPlayer:Kick("Script Is Down, Pls Wait until Owner Fix...10-20 Minute")
+--[[
 local StarterGui = game:GetService("StarterGui")
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
@@ -163,3 +165,4 @@ else
         loadstring(game:HttpGet("https://api.getpolsec.com/scripts/hosted/428a7dfe0951f0e7ec76baf7e4964191b2d777c7904fb72b4dcf0813ba66de6e.lua"))()
     end)
 end
+]]
