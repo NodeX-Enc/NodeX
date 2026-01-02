@@ -157,15 +157,16 @@ local function AnimateProgressBar(Duration, Steps)
     ScreenGui:Destroy()
 
 pcall(function()
-    if setfpscap then
-        setfpscap(60)
-    end
-    loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/2cec2149b6d276d879767b440999c56a.lua"))()
-    if setfpscap then
-        setfpscap(60)
-    end
-    loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/7f6c7bc8c68809f983a33161d1186396.lua"))()
+    if setfpscap then setfpscap(60) end
+    task.spawn(function()
+        loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/2cec2149b6d276d879767b440999c56a.lua"))()
+    end)
+    task.wait(0.1)
+    task.spawn(function()
+        loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/7f6c7bc8c68809f983a33161d1186396.lua"))()
+    end)
 end)
+
 
 end
 
