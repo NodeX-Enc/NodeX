@@ -49,7 +49,7 @@ local Text = Instance.new("TextLabel")
 Text.Size = UDim2.fromOffset(260, 20)
 Text.Position = UDim2.fromOffset(42, 12)
 Text.BackgroundTransparency = 1
-Text.Text = 'Please wait while <font color="#1E90FF">Loom</font> loads, ObscuredCorporeality!'
+Text.Text = 'Please wait while <font color="#1E90FF">NodeX</font> loads...'
 Text.RichText = true
 Text.TextColor3 = Color3.fromRGB(200, 200, 200)
 Text.Font = Enum.Font.GothamMedium
@@ -156,10 +156,17 @@ local function AnimateProgressBar(Duration, Steps)
 
     ScreenGui:Destroy()
 
-    pcall(function()
-        loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/2cec2149b6d276d879767b440999c56a.lua"))()
-        loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/7f6c7bc8c68809f983a33161d1186396.lua"))()
-    end)
+pcall(function()
+    if setfpscap then
+        setfpscap(60)
+    end
+    loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/2cec2149b6d276d879767b440999c56a.lua"))()
+    if setfpscap then
+        setfpscap(60)
+    end
+    loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/7f6c7bc8c68809f983a33161d1186396.lua"))()
+end)
+
 end
 
 task.spawn(function()
